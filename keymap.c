@@ -1,5 +1,6 @@
 #include QMK_KEYBOARD_H
 #include "keymap_canadian_multilingual.h"
+#include "os_detection.h"
 
 enum layer_number {
   _WRITE = 0,
@@ -166,11 +167,24 @@ bool oled_task_user(void) {
         oled_write_ln("LAYER: Undef-1", false);
         break;
     }
+
+    switch (detected_host_os()) {
+      case OS_MACOS:
+    	  oled_write_ln("OS: MAC_OS", false);
+        break;
+      case OS_WINDOWS:
+        oled_write_ln("OS: Windows", false);
+        break;
+      case OS_LINUX:
+        oled_write_ln("OS: Linux", false);
+        break;
+      default:
+        oled_write_ln("OS: Undetected", false);
+        break;
+      }
     // If you want to change the display of OLED, you need to change here
     oled_write_ln(read_keylogs(), false);
-    //oled_write_ln(read_mode_icon(keymap_config.swap_lalt_lgui), false);
-    //oled_write_ln(read_host_led_state(), false);
-    //oled_write_ln(read_timelog(), false);
+		
   } else {
     oled_write(read_logo(), false);
   }
