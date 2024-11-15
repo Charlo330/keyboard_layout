@@ -1,7 +1,8 @@
 #include QMK_KEYBOARD_H
 #include "keymap_canadian_multilingual.h"
 #include "os_detection.h"
-
+#include "luna.c"
+#include "space.c"
 
 enum layer_number {
   _WRITE = 0,
@@ -38,24 +39,24 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                         KC_LALT, KC_LGUI, MO(_LOWER), KC_SPC, KC_ENT, MO(_RAISE), KC_BSPC, KC_RGUI
 ),
 /* LOWER
- * ,-----------------------------------------.                    ,-----------------------------------------.
- * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
- * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
+ * ,-----------------------------------------.                    ,-----------------------------------------
  * |  F1  |  F2  |  F3  |  F4  |  F5  |  F6  |                    |  F7  |  F8  |  F9  | F10  | F11  | F12  |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |   `  |   !  |   @  |   #  |   $  |   %  |-------.    ,-------|   ?  |   &  |   *  |   (  |   )  |   +  |
+ * |      |      |      |      |      |      |                    |   ?  |   [  |   ]  |      |      |   =  |
+ * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
+ * |   `  |   !  |   @  |   #  |   $  |   %  |-------.    ,-------|   /  |   (  |   )  |   &  |   *  |   +  |
  * |------+------+------+------+------+------|   [   |    |    ]  |------+------+------+------+------+------|
- * |      |      |      |      |      |      |-------|    |-------|   _  |   /  |   +  |   {  |   }  |   -  |
+ * |      |      |      |      |      |      |-------|    |-------|   _  |   {  |   }  |   \  |      |   -  |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *                   | LAlt | LGUI |LOWER | /Space  /       \Enter \  |RAISE |BackSP| RGUI |
  *                   |      |      |      |/       /         \      \ |      |      |      |
  *                   `----------------------------'           '------''--------------------'
  */
 [_LOWER] = LAYOUT(
-  _______, _______, _______, _______, _______, _______,                   _______, _______, _______,_______, _______, _______,
-  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                     KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
-  LALT(KC_GRV), KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC,                LSFT(KC_6), KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_PLUS,
-  _______, _______, _______, _______, _______, _______, _______, _______, KC_UNDS, LALT(KC_SLSH), KC_PLUS, CA_LCBR, CA_RCBR, KC_MINS,
+	KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                     KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
+  _______, _______, _______, _______, _______, _______,                   LSFT(KC_6), CA_LBRC, CA_RBRC, LALT(KC_COMM), LALT(KC_DOT), KC_EQL,
+  LALT(KC_GRV), KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC,                KC_NUBS, KC_LPRN, KC_RPRN, KC_AMPR, KC_ASTR, KC_PLUS,
+  _______, _______, _______, _______, _______, _______, _______, _______, KC_UNDS, CA_LCBR, CA_RCBR, LSFT(KC_NUBS), _______, KC_MINS,
                              _______, _______, _______, _______, _______,  _______, _______, _______
 ),
 /* RAISE
@@ -111,8 +112,8 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 #ifdef OLED_ENABLE
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
-  if (!is_keyboard_master())
-    return OLED_ROTATION_180;  // flips the display 180 degrees if offhand
+  if (is_keyboard_master())
+    return OLED_ROTATION_270;  // flips the display 180 degrees if offhand
   return rotation;
 }
 
@@ -123,47 +124,52 @@ void set_keylog(uint16_t keycode, keyrecord_t *record);
 const char *read_keylog(void);
 const char *read_keylogs(void);
 
-// const char *read_mode_icon(bool swap);
-// const char *read_host_led_state(void);
-// void set_timelog(void);
-// const char *read_timelog(void);
-
 bool oled_task_user(void) {
   if (is_keyboard_master()) {
-     switch (get_highest_layer(layer_state)) {
+
+		oled_write_ln("Layer", false);
+
+      switch (get_highest_layer(layer_state)) {
       case _WRITE:
-        oled_write_ln("LAYER: WRITE", false);
+        oled_write_ln("WRITE", false);
         break;
       case _LOWER:
-        oled_write_ln("LAYER: LOWER", false);
+        oled_write_ln("LOWER", false);
         break;
       case _RAISE:
-        oled_write_ln("LAYER: RAISE", false);
+        oled_write_ln("RAISE", false);
         break;
       default:
-        oled_write_ln("LAYER: Undef-1", false);
+        oled_write_ln("Undef-1", false);
         break;
     }
 
-    switch (detected_host_os()) {
+		oled_write_ln("\nOS:", false);
+
+   	switch (detected_host_os()) {
       case OS_MACOS:
-    	  oled_write_ln("OS: MAC_OS", false);
+    	  oled_write_ln("MacOS", false);
         break;
       case OS_WINDOWS:
-        oled_write_ln("OS: Windows", false);
+        oled_write_ln("Win", false);
         break;
       case OS_LINUX:
-        oled_write_ln("OS: Linux", false);
+        oled_write_ln("Unix", false);
         break;
       default:
-        oled_write_ln("OS: Undetected", false);
+        oled_write_ln("Err", false);
         break;
       }
-    // If you want to change the display of OLED, you need to change here
-    oled_write_ln(read_keylogs(), false);
+
+		static char wpm_str[4];
+
+    //oled_write_ln(read_keylogs(), false);
+  	sprintf(wpm_str, "%03d", get_current_wpm());
+		oled_write_ln(wpm_str, false);
 		
+		render_luna(0,13);
   } else {
-    oled_write(read_logo(), false);
+    render_space();
   }
     return false;
 }
