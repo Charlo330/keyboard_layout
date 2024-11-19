@@ -3,6 +3,7 @@
 #include "os_detection.h"
 #include "luna.c"
 #include "space.c"
+#include "osLogo.c"
 
 enum layer_number {
   _WRITE = 0,
@@ -33,7 +34,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
  [_WRITE] = LAYOUT(
   KC_ESC,   KC_1,   KC_2,    KC_3,    KC_4,    KC_5,                     KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_GRV,
-  KC_TAB,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    LALT(KC_GRV),
+  KC_TAB,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    LALT(KC_LBRC),
   KC_LCTL,  KC_A,   KC_S,    KC_D,    KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
   KC_LSFT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, KC_LBRC,  KC_RBRC,  KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,  KC_RSFT,
                         KC_LALT, KC_LGUI, MO(_LOWER), KC_SPC, KC_ENT, MO(_RAISE), KC_BSPC, KC_RGUI
@@ -61,11 +62,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 /* RAISE
  * ,-----------------------------------------.                    ,-----------------------------------------.
- * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
- * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |   `  |   1  |   2  |   3  |   4  |   5  |                    |   6  |   7  |   8  |   9  |   0  |      |
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
- * |  F1  |  F2  |  F3  |  F4  |  F5  |  F6  |-------.    ,-------|      | Left | Down |  Up  |Right |      |
+ * |      |      |      |      |      |      |                    |      |  ### |  Up  | ###  |      |      |
+ * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
+ * |  F1  |  F2  |  F3  |  F4  |  F5  |  F6  |-------.    ,-------|  ### | Left | Down |Right | ###  |      |
  * |------+------+------+------+------+------|   [   |    |    ]  |------+------+------+------+------+------|
  * |  F7  |  F8  |  F9  | F10  | F11  | F12  |-------|    |-------|   +  |   -  |   =  |   [  |   ]  |   \  |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
@@ -75,9 +76,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 
 [_RAISE] = LAYOUT(
-  _______, _______, _______, _______, _______, _______,                     _______, _______, _______, _______, _______, _______,
   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                        KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    _______,
-  KC_F1,  KC_F2,    KC_F3,   KC_F4,   KC_F5,   KC_F6,                       XXXXXXX, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, XXXXXXX,
+	_______, _______, _______, _______, _______, _______,                     _______, LALT(KC_LEFT), KC_UP, LALT(KC_RIGHT), _______, _______,
+  KC_F1,  KC_F2,    KC_F3,   KC_F4,   KC_F5,   KC_F6,                       LGUI(KC_LEFT), KC_LEFT, KC_DOWN, KC_RIGHT, LGUI(KC_RIGHT), XXXXXXX,
   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,   _______, _______,  KC_PLUS, KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, LALT(KC_BSLS),
                              _______, _______, _______,  _______, _______,  _______, _______, _______
 ),
@@ -126,8 +127,7 @@ const char *read_keylogs(void);
 
 bool oled_task_user(void) {
   if (is_keyboard_master()) {
-
-		oled_write_ln("Layer", false);
+			render_os_logo();
 
       switch (get_highest_layer(layer_state)) {
       case _WRITE:
@@ -143,23 +143,6 @@ bool oled_task_user(void) {
         oled_write_ln("Undef-1", false);
         break;
     }
-
-		oled_write_ln("\nOS:", false);
-
-   	switch (detected_host_os()) {
-      case OS_MACOS:
-    	  oled_write_ln("MacOS", false);
-        break;
-      case OS_WINDOWS:
-        oled_write_ln("Win", false);
-        break;
-      case OS_LINUX:
-        oled_write_ln("Unix", false);
-        break;
-      default:
-        oled_write_ln("Err", false);
-        break;
-      }
 
 		static char wpm_str[4];
 
@@ -194,13 +177,23 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     // set_timelog();
   }
 
-  /* switch (keycode) {
-    case KC_RSFT:
-      if (record->event.pressed) {
-        toggle_layer();
-      }
-      return false;
-      break;
-    } */
-  return true;
+  switch (keycode) {
+		case KC_LCTL:
+		case KC_RCTL:
+			if (record->event.pressed) {
+				isSneaking = true;
+			} else {
+					isSneaking = false;
+			}
+			break;
+		case KC_SPC:
+			if (record->event.pressed) {
+				isJumping  = true;
+				showedJump = false;
+			} else {
+					isJumping = false;
+			}
+			break;
+		}
+    return true;
 }
