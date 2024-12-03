@@ -47,7 +47,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
  * |   !  |   ?  |   @  |   #  |   $  |   %  |-------.    ,-------|   /  |   (  |   )  |   =  |   -  |   +  |
  * |------+------+------+------+------+------|   [   |    |    ]  |------+------+------+------+------+------|
- * |      |      |      |      |      |      |-------|    |-------|   _  |   {  |   }  |   &  |   *  |      |
+ * |      |      |      |      |      |      |-------|    |-------|   _  |   {  |   }  |   &  |   *  |   |  |
  * `-----------------------------------------/       /     \      \-----------------------------------------'
  *                   | LAlt | LGUI |LOWER | /Space  /       \Enter \  |RAISE |BackSP| RGUI |
  *                   |      |      |      |/       /         \      \ |      |      |      |
@@ -57,7 +57,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                     KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
   _______, _______, _______, _______, _______, _______,                   LSFT(KC_NUBS), CA_LBRC, CA_RBRC, LALT(KC_COMM), LALT(KC_DOT), LALT(KC_RBRC),
   KC_EXLM, LSFT(KC_6), KC_AT,   KC_HASH, KC_DLR,  KC_PERC,                KC_NUBS, KC_LPRN, KC_RPRN, KC_EQL, KC_MINS, KC_PLUS,
-  _______, _______, _______, _______, _______, _______, _______, _______, KC_UNDS, CA_LCBR, CA_RCBR, KC_AMPR, KC_ASTR, _______,
+  _______, _______, _______, _______, _______, _______, _______, _______, KC_UNDS, CA_LCBR, CA_RCBR, KC_AMPR, KC_ASTR, LALT(KC_MINS),
                              _______, _______, _______, KC_SPC, KC_ENT,  _______, _______, _______
 ),
 /* RAISE
