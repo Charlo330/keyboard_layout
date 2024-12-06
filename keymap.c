@@ -77,7 +77,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                   |      |      |      |/ LOWER /         \ RAISE\ |      |      |      |
  *                   `----------------------------'           '------''--------------------'
  */
-
 [_RAISE] = LAYOUT(
   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                        KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    _______,
 	KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6,                     _______, LALT(KC_LEFT), KC_UP, LALT(KC_RIGHT), _______, _______,
@@ -114,7 +113,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 
 //SSD1306 OLED update loop, make sure to enable OLED_ENABLE=yes in rules.mk
 #ifdef OLED_ENABLE
-
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
   if (is_keyboard_master())
     return OLED_ROTATION_270;  // flips the display 180 degrees if offhand
@@ -124,12 +122,11 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 // When you add source files to SRC in rules.mk, you can use functions.
 const char *read_layer_state(void);
 const char *read_logo(void);
-void set_keylog(uint16_t keycode, keyrecord_t *record);
 const char *read_keylog(void);
 const char *read_keylogs(void);
 
 bool oled_task_user(void) {
-  if (is_keyboard_master()) {
+ 	if (is_keyboard_master()) {
 			render_os_logo();
 
       switch (get_highest_layer(layer_state)) {
@@ -151,7 +148,6 @@ bool oled_task_user(void) {
     }
 
 		static char wpm_str[4];
-
   	sprintf(wpm_str, "%03d", get_current_wpm());
 		oled_write_ln("wpm:", false);
 		oled_write(wpm_str, false);
@@ -160,7 +156,7 @@ bool oled_task_user(void) {
   } else {
     render_space();
   }
-    return false;
+	return true;
 }
 #endif // OLED_ENABLE
 
@@ -176,12 +172,6 @@ void toggle_layer(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  if (record->event.pressed) {
-#ifdef OLED_ENABLE
-    set_keylog(keycode, record);
-#endif
-  }
-
   switch (keycode) {
 		case KC_LCTL:
 		case KC_RCTL:
@@ -199,6 +189,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 				isJumping = false;
 			}
 			break;
-		}
+	}
     return true;
 }

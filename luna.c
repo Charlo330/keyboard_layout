@@ -140,7 +140,7 @@ void render_luna(int LUNA_X, int LUNA_Y) {
 
     // animation timer
     if (timer_elapsed32(anim_timer_luna) > ANIM_FRAME_DURATION) {
-        anim_timer_luna       = timer_read32();
+        anim_timer_luna = timer_read32();
         current_wpm_luna = get_current_wpm();
         animation_phase();
     }
