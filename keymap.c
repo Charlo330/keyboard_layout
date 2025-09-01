@@ -17,7 +17,52 @@ enum layer_number {
   _FCT,
 };
 
+enum custom_keycodes {
+	NAV_WORD_L,   // Go to previous word
+  NAV_WORD_R,   // Go to next word
+	NAV_LINE_L,   // Go to beginning of line
+	NAV_LINE_R,   // Go to end of line
+};
+
 bool is_base_layer = true; // Variable to track the current layer state
+
+// OS-specific keycode mappings
+uint16_t get_os_keycode(uint16_t custom_keycode) {
+	os_variant_t effective_os = detected_host_os();
+
+	switch (custom_keycode) {
+		case NAV_WORD_L: // Previous word
+			switch (effective_os) {
+				case OS_MACOS:
+					return LALT(KC_LEFT);
+				default:
+					return (KC_LEFT);
+			}
+		case NAV_WORD_R: // Next word
+			switch (effective_os) {
+				case OS_MACOS:
+					oled_write_ln("NAV_R", false);
+					return LALT(KC_RIGHT);
+				default:
+					return KC_RIGHT;
+			}
+		case NAV_LINE_L: // Beginning Line
+			switch (effective_os) {
+				case OS_MACOS:
+					return LGUI(KC_LEFT);
+				default:
+					return KC_HOME;
+			}
+		case NAV_LINE_R: // End Line
+			switch (effective_os) {
+				case OS_MACOS:
+					return LGUI(KC_RIGHT);
+				default:
+					return KC_END;
+			}
+	}
+    return custom_keycode;
+}
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -79,8 +124,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_RAISE] = LAYOUT(
   KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                        KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    _______,
-	KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6,                     _______, LALT(KC_LEFT), KC_UP, LALT(KC_RIGHT), _______, _______,
-  KC_F7,  KC_F8,    KC_F9,   KC_F10,   KC_F11,   KC_F12,                       LGUI(KC_LEFT), KC_LEFT, KC_DOWN, KC_RIGHT, LGUI(KC_RIGHT), XXXXXXX,
+	KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6,                                  _______, NAV_WORD_L, KC_UP, NAV_WORD_R, _______, _______,
+  KC_F7,  KC_F8,    KC_F9,   KC_F10,   KC_F11,   KC_F12,                       NAV_LINE_L, KC_LEFT, KC_DOWN, KC_RIGHT, NAV_LINE_R, XXXXXXX,
   _______,   _______,   _______,   _______,  _______,  _______,   _______, _______,  KC_PLUS, KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, LALT(KC_BSLS),
                              _______, _______, _______,  MO(_LOWER), MO(_RAISE),  _______, _______, _______
 ),
@@ -172,23 +217,21 @@ void toggle_layer(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+	  if (record->event.pressed) {
+  }
   switch (keycode) {
-		case KC_LCTL:
-		case KC_RCTL:
+		case NAV_WORD_L:
+		case NAV_WORD_R:
+		case NAV_LINE_L:
+		case NAV_LINE_R:
 			if (record->event.pressed) {
-				isSneaking = true;
-			} else {
-				isSneaking = false;
-			}
-			break;
-		case KC_SPC:
-			if (record->event.pressed) {
-				isJumping  = true;
-				showedJump = false;
-			} else {
-				isJumping = false;
-			}
-			break;
+        uint16_t os_keycode = get_os_keycode(keycode);
+				    static char debug_str[10];
+    sprintf(debug_str, "KC:%d", os_keycode);
+    oled_write_ln(debug_str, false);
+        tap_code16(os_keycode);
+      }
+      return false;
 	}
     return true;
 }
