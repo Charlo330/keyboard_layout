@@ -18,7 +18,7 @@ enum layer_number {
 };
 
 enum custom_keycodes {
-	NAV_WORD_L,   // Go to previous word
+	NAV_WORD_L = SAFE_RANGE,   // Go to previous word
   NAV_WORD_R,   // Go to next word
 	NAV_LINE_L,   // Go to beginning of line
 	NAV_LINE_R,   // Go to end of line
