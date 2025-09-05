@@ -1,6 +1,8 @@
 #include QMK_KEYBOARD_H
 #include "keymap_canadian_multilingual.h"
 #include "os_detection.h"
+#include "key/MAC_CAN_CSA.h"
+#include "key/WIN_FR_CAN.h"
 #include "luna.c"
 #include "space.c"
 #include "osLogo.c"
@@ -16,12 +18,12 @@ enum layer_number {
   _RAISE,
   _FCT,
 };
-
 enum custom_keycodes {
 	NAV_WORD_L = SAFE_RANGE,   // Go to previous word
-  NAV_WORD_R,   // Go to next word
+	NAV_WORD_R,   // Go to next word
 	NAV_LINE_L,   // Go to beginning of line
 	NAV_LINE_R,   // Go to end of line
+	PIPE,
 };
 
 bool is_base_layer = true; // Variable to track the current layer state
@@ -35,13 +37,14 @@ uint16_t get_os_keycode(uint16_t custom_keycode) {
 			switch (effective_os) {
 				case OS_MACOS:
 					return LALT(KC_LEFT);
+				case OS_WINDOWS:
+					return LCTL(KC_LEFT);
 				default:
 					return (KC_LEFT);
 			}
 		case NAV_WORD_R: // Next word
 			switch (effective_os) {
 				case OS_MACOS:
-					oled_write_ln("NAV_R", false);
 					return LALT(KC_RIGHT);
 				default:
 					return KC_RIGHT;
@@ -50,15 +53,29 @@ uint16_t get_os_keycode(uint16_t custom_keycode) {
 			switch (effective_os) {
 				case OS_MACOS:
 					return LGUI(KC_LEFT);
+				case OS_WINDOWS:
+					return KC_HOME;
 				default:
+				// windows works
 					return KC_HOME;
 			}
 		case NAV_LINE_R: // End Line
 			switch (effective_os) {
 				case OS_MACOS:
 					return LGUI(KC_RIGHT);
+				case OS_WINDOWS:
+					return KC_END;
 				default:
 					return KC_END;
+			}
+		case PIPE: 
+			switch (effective_os) {
+				case OS_MACOS:
+					return MC_PIPE;
+				case OS_WINDOWS:
+					return WF_PIPE;
+				default:
+					return LALT(KC_MINS);
 			}
 	}
     return custom_keycode;
@@ -105,7 +122,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                     KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
   _______, _______, _______, _______, _______, _______,                   LSFT(KC_NUBS), CA_LBRC, CA_RBRC, LALT(KC_COMM), LALT(KC_DOT), LALT(KC_RBRC),
   KC_EXLM, LSFT(KC_6), KC_AT,   KC_HASH, KC_DLR,  KC_PERC,                KC_NUBS, KC_LPRN, KC_RPRN, KC_EQL, KC_MINS, KC_PLUS,
-  _______, _______, _______, _______, _______, _______, _______, _______, KC_UNDS, CA_LCBR, CA_RCBR, KC_AMPR, KC_ASTR, LALT(KC_MINS),
+  _______, _______, _______, _______, _______, _______, _______, _______, KC_UNDS, CA_LCBR, CA_RCBR, KC_AMPR, KC_ASTR, PIPE,
                              _______, _______, _______, MO(_LOWER), MO(_RAISE),  _______, _______, _______
 ),
 /* RAISE
@@ -224,14 +241,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 		case NAV_WORD_R:
 		case NAV_LINE_L:
 		case NAV_LINE_R:
+		case PIPE:
 			if (record->event.pressed) {
         uint16_t os_keycode = get_os_keycode(keycode);
-				    static char debug_str[10];
-    sprintf(debug_str, "KC:%d", os_keycode);
-    oled_write_ln(debug_str, false);
         tap_code16(os_keycode);
       }
       return false;
+					case KC_SPC:
+			if (record->event.pressed) {
+				isJumping  = true;
+				showedJump = false;
+			} else {
+				isJumping = false;
+			}
+			break;
 	}
     return true;
 }
