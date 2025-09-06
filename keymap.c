@@ -24,61 +24,202 @@ enum custom_keycodes {
 	NAV_LINE_L,   // Go to beginning of line
 	NAV_LINE_R,   // Go to end of line
 	PIPE,
+	LCBR,
+	RCBR,
+	LSBR,
+	RSBR,
+	KNUBS,
+	RKNUBS,
+	TILD,
+	LABK,
+	RABK,
+	AT,
+	HASH,
+	BCTK,
+	CCED,
+	BCIRC,
 };
 
 bool is_base_layer = true; // Variable to track the current layer state
 
 // OS-specific keycode mappings
-uint16_t get_os_keycode(uint16_t custom_keycode) {
+int16_t get_os_keycode(uint16_t custom_keycode) {
 	os_variant_t effective_os = detected_host_os();
 
 	switch (custom_keycode) {
 		case NAV_WORD_L: // Previous word
 			switch (effective_os) {
 				case OS_MACOS:
-					return LALT(KC_LEFT);
+					return MAC_WL;
 				case OS_WINDOWS:
-					return LCTL(KC_LEFT);
+					return WIN_WL;
 				default:
-					return (KC_LEFT);
+					return MAC_WL;
 			}
 		case NAV_WORD_R: // Next word
 			switch (effective_os) {
 				case OS_MACOS:
-					return LALT(KC_RIGHT);
+					return MAC_WR;
+				case OS_WINDOWS:
+					return WIN_WR;
 				default:
-					return KC_RIGHT;
+					return MAC_WR;
 			}
 		case NAV_LINE_L: // Beginning Line
 			switch (effective_os) {
 				case OS_MACOS:
-					return LGUI(KC_LEFT);
+					return MAC_LL;
 				case OS_WINDOWS:
-					return KC_HOME;
+					return WIN_LL;
 				default:
-				// windows works
-					return KC_HOME;
+					return MAC_LL;
 			}
 		case NAV_LINE_R: // End Line
 			switch (effective_os) {
 				case OS_MACOS:
-					return LGUI(KC_RIGHT);
+					return MAC_LR;
 				case OS_WINDOWS:
-					return KC_END;
+					return WIN_LR;
 				default:
-					return KC_END;
+					return MAC_LR;
 			}
 		case PIPE: 
 			switch (effective_os) {
 				case OS_MACOS:
-					return MC_PIPE;
+					return MAC_PIPE;
 				case OS_WINDOWS:
-					return WF_PIPE;
+					return WIN_PIPE;
 				default:
-					return LALT(KC_MINS);
+					return MAC_PIPE;
 			}
-	}
-    return custom_keycode;
+		case LCBR:
+			switch (effective_os) {
+				case OS_MACOS:
+					return MAC_LCBR;
+				case OS_WINDOWS:
+					return WIN_LCBR;
+				default:
+					return MAC_LCBR;
+			}
+		case RCBR:
+			switch (effective_os) {
+				case OS_MACOS:
+					return MAC_RCBR;
+				case OS_WINDOWS:
+					return WIN_RCBR;
+				default:
+					return MAC_RCBR;
+			}
+		case LSBR:
+			switch (effective_os) {
+				case OS_MACOS:
+					return MAC_LSBR;
+				case OS_WINDOWS:
+					return WIN_LSBR;
+				default:
+					return MAC_LSBR;
+			}
+		case RSBR:
+			switch (effective_os) {
+				case OS_MACOS:
+					return MAC_RSBR;
+				case OS_WINDOWS:
+					return WIN_RSBR;
+				default:
+					return MAC_RSBR;
+			}
+		case KNUBS:
+			switch (effective_os) {
+				case OS_MACOS:
+					return MAC_KNUBS;
+				case OS_WINDOWS:
+					return WIN_KNUBS;
+				default:
+					return MAC_KNUBS;
+			}
+		case RKNUBS:
+			switch (effective_os) {
+				case OS_MACOS:
+					return MAC_RKNUBS;
+				case OS_WINDOWS:
+					return WIN_RKNUBS;
+				default:
+					return MAC_RKNUBS;
+			}
+		case TILD:
+			switch (effective_os) {
+				case OS_MACOS:
+					return MAC_TILD;
+				case OS_WINDOWS:
+					return WIN_TILD;
+				default:
+					return MAC_TILD;
+			}
+		case LABK:
+			switch (effective_os) {
+				case OS_MACOS:
+					return MAC_LABK;
+				case OS_WINDOWS:
+					return WIN_LABK;
+				default:
+					return MAC_LABK;
+			}
+		case RABK:
+			switch (effective_os) {
+				case OS_MACOS:
+					return MAC_RABK;
+				case OS_WINDOWS:
+					return WIN_RABK;
+				default:
+					return MAC_RABK;
+			}
+		case AT:
+			switch (effective_os) {
+				case OS_MACOS:
+					return MAC_AT;
+				case OS_WINDOWS:
+					return WIN_AT;
+				default:
+					return MAC_AT;
+			}
+		case HASH:
+			switch (effective_os) {
+				case OS_MACOS:
+					return MAC_HASH;
+				case OS_WINDOWS:
+					return WIN_HASH;
+				default:
+					return MAC_HASH;
+			}
+		case BCTK:
+			switch (effective_os) {
+				case OS_MACOS:
+					return MAC_BCTK;
+				case OS_WINDOWS:
+					return WIN_BCTK;
+				default:
+					return MAC_BCTK;
+			}
+		case CCED:
+			switch (effective_os) {
+				case OS_MACOS:
+					return MAC_CCED;
+				case OS_WINDOWS:
+					return WIN_CCED;
+				default:
+					return MAC_CCED;
+			}
+		case BCIRC:
+			switch (effective_os) {
+				case OS_MACOS:
+					return MAC_BCIRC;
+				case OS_WINDOWS:
+					return WIN_BCIRC;
+				default:
+					return MAC_BCIRC;
+			}
+		}
+    return -1;
 }
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -99,9 +240,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_WRITE] = LAYOUT(
   KC_ESC,   KC_1,   KC_2,    KC_3,    KC_4,    KC_5,                     KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_GRV,
-  KC_TAB,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    LALT(KC_LBRC),
+  KC_TAB,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    BCTK,
   KC_CAPS,  KC_A,   KC_S,    KC_D,    KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-  KC_LSFT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, KC_LBRC,  KC_RBRC,  KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,  KC_RSFT,
+  KC_LSFT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B, BCIRC,  CCED,  KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,  KC_RSFT,
                         KC_LCTL, KC_LALT, KC_LGUI, LT(_LOWER, KC_SPC), LT(_RAISE, KC_ENT), KC_BSPC, AL_HYPER, _______
 ),
 /* LOWER
@@ -120,9 +261,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_LOWER] = LAYOUT(
 	KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                     KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
-  _______, _______, _______, _______, _______, _______,                   LSFT(KC_NUBS), CA_LBRC, CA_RBRC, LALT(KC_COMM), LALT(KC_DOT), LALT(KC_RBRC),
-  KC_EXLM, LSFT(KC_6), KC_AT,   KC_HASH, KC_DLR,  KC_PERC,                KC_NUBS, KC_LPRN, KC_RPRN, KC_EQL, KC_MINS, KC_PLUS,
-  _______, _______, _______, _______, _______, _______, _______, _______, KC_UNDS, CA_LCBR, CA_RCBR, KC_AMPR, KC_ASTR, PIPE,
+  _______, _______, _______, _______, _______, _______,                   RKNUBS, LSBR, RSBR, LABK, RABK, TILD,
+  KC_EXLM, LSFT(KC_6), AT, HASH, KC_DLR,  KC_PERC,                KNUBS, KC_LPRN, KC_RPRN, KC_EQL, KC_MINS, KC_PLUS,
+  _______, _______, _______, _______, _______, _______, _______, _______, KC_UNDS, LCBR, RCBR, KC_AMPR, KC_ASTR, PIPE,
                              _______, _______, _______, MO(_LOWER), MO(_RAISE),  _______, _______, _______
 ),
 /* RAISE
@@ -234,20 +375,17 @@ void toggle_layer(void) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-	  if (record->event.pressed) {
-  }
+	if (record->event.pressed) {
+		uint16_t os_keycode = get_os_keycode(keycode);
+
+		if (os_keycode != -1) {
+			tap_code16(os_keycode);
+      return true;
+		}
+	}
+
   switch (keycode) {
-		case NAV_WORD_L:
-		case NAV_WORD_R:
-		case NAV_LINE_L:
-		case NAV_LINE_R:
-		case PIPE:
-			if (record->event.pressed) {
-        uint16_t os_keycode = get_os_keycode(keycode);
-        tap_code16(os_keycode);
-      }
-      return false;
-					case KC_SPC:
+		case KC_SPC:
 			if (record->event.pressed) {
 				isJumping  = true;
 				showedJump = false;
@@ -256,5 +394,5 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 			}
 			break;
 	}
-    return true;
+  return true;
 }
